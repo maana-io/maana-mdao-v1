@@ -65,3 +65,85 @@ query{
     value
   }
 }
+
+## multiDisciplineProblem
+
+query{
+  multiDisciplineProblem(
+    
+
+    
+  	independantVariables:[
+      {
+        id: "x"
+        value: 1.0
+      },
+      {
+        id: "z1"
+        value: 5.0
+      },
+      {
+        id: "z2"
+        value: 2.0
+      }
+
+    ]
+    group: {
+      id: "group"
+      name: "cycle"
+      explicitDisciplines:[
+        	{
+            id: "d1"
+            component:{
+              id: "d1"
+              name: "d1"
+              equation: "y1 = z1**2 + z2 + x - 0.2*y2"
+              
+            }
+            promotesInputs: ["x", "z2", "y2"]
+            promotesOutputs: ["y1"]
+          }
+        {
+            id: "d2"
+            component:{
+              id: "d2"
+              name: "d2"
+              equation: "y2 = y1**.5 + z1 + z2"
+              
+            }
+            promotesInputs: ["y1", "z1", "z2"]
+            promotesOutputs: ["y2"]
+          }
+      ]
+      
+    }
+    
+    constraints:[
+      {
+        id: "const.con1"
+        name: "con1"
+        lowerBound: 0
+        upperBound: 10
+        equation: "con1 = 3.16 - y1"
+        promotes: ["con1", "y1"]
+      }
+       {
+        id: "const.con2"
+        name: "con2"
+        lowerBound: 0
+        upperBound: 10
+        equation: "con2 = y2 - 24.0"
+        promotes: ["con2", "y2"]
+      }
+    ]
+    objective:{
+      id: "obj"
+      equation: "obj = x**2 + z2 + y1 + exp(-y2)"
+      promotes:["x", "z2", "y1", "y2", "obj"]
+    }
+  
+  ){
+    id
+    value
+  }
+}

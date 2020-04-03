@@ -80,6 +80,63 @@ type_defs = gql(mdao_types)
 query = QueryType()
 
 # Resolvers are simple python functions
+
+@query.field("multiDisciplineProblem")
+def resolve_multi_discipline_problem(*_,  independantVariables, group, constraints, objective):
+    
+    # build the problem
+    prob = om.Problem()
+
+    # add group to hold disciplines
+    cycle = prob.model.add_subsystem(group['name'], om.Group(), promotes=['*'])
+
+    # create the independant variables
+    indeps = prob.model.add_subsystem('indeps', om.IndepVarComp())
+    # provides initial values for independant variables
+    for indep in independantVariables:
+        indeps.add_output(indep['id'], indep['value'])
+
+
+    for d in group['explicitDisciplines']:
+        cycle.add_subsystem(d['component']['name'],  om.ExecComp(d['component']["equation"]),  promotes_inputs=d['promotesInputs'],
+                            promotes_outputs=d['promotesOutputs'])
+    
+    # Nonlinear Block Gauss Seidel is a gradient free solver
+    cycle.nonlinear_solver = om.NonlinearBlockGS()
+
+    #'obj = x**2 + z1 + y1 + exp(-y2)'
+    #z=np.array([0.0, 0.0]), x=0.0),
+    prob.model.add_subsystem(objective['id'], om.ExecComp(objective['equation']), promotes=objective['promotes'])
+
+
+    # add constraints
+    for c in constraints:
+        prob.model.add_subsystem(c['name'], om.ExecComp(c['equation']), promotes=c['promotes'])
+    
+    prob.setup()
+
+
+    prob.run_model()
+
+
+    #prob['y1'][0], prob['y2'][0], prob['obj'][0], prob['con1'][0], prob['con2'][0])
+    
+    results = []
+
+    #get objective value
+    results.append({'id': objective['id'], 'value': prob[objective['id']][0]})
+    # gets the output values
+    for ec in group['explicitDisciplines']:
+        for o in ec['promotesOutputs']:
+            results.append({'id': o, 'value': prob[o][0]})
+
+    for c in constraints:
+        results.append({'id': c['name'], 'value': prob[c['name']][0]})
+
+    return results
+
+
+
 #problem(driver: DriverAsInput!, independantVariables: [IndependantVariableComponentAsInput!]!, designVariables: [DesignVariableAsInput!]!, explicitComponent: ExplicitComponentAsInput!, constraints: [ConstraintAsInput!]!, objective: ObjectiveAsInput!): [Result]
 @query.field("problem")
 def resolve_problem(*_, driver, independantVariables, designVariables, explicitComponent, constraints, objective):

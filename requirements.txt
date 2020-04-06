@@ -5,7 +5,6 @@ gunicorn==20.0.4            #default from tiangolo/uvicorn-gunicorn:python3.7 is
 asgi-lifespan==0.6.0        #latest is 1.0.0 and is not backward compatible
 python-dotenv==0.10.3
 requests
-pandas
 scikit-learn
 graphqlclient==0.2.4
 

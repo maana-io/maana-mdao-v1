@@ -67,12 +67,12 @@ query{
 }
 
 ## multiDisciplineProblem
-
 query{
   multiDisciplineProblem(
-    
-
-    
+    driver: {
+      id: "sciPy",
+      optimizer: "COBYLA"
+    }
   	independantVariables:[
       {
         id: "x"
@@ -87,6 +87,23 @@ query{
         value: 2.0
       }
 
+    ]
+    designVariables:[
+      {
+        id: "x"
+        lowerBound: -50
+        upperBound: 50
+      }
+      {
+        id: "z1"
+        lowerBound: -50
+        upperBound: 50
+      },
+      {
+        id: "z2"
+        lowerBound: -50
+        upperBound: 50
+      }
     ]
     group: {
       id: "group"

@@ -2,7 +2,7 @@ mdao_types = """
 
 type Query {
   problem(driver: DriverAsInput!, independantVariables: [IndependantVariableComponentAsInput!]!, designVariables: [DesignVariableAsInput!]!, explicitComponent: ExplicitComponentAsInput!, constraints: [ConstraintAsInput!]!, objective: ObjectiveAsInput!): [Result]
-  multiDisciplineProblem(independantVariables: [IndependantVariableComponentAsInput!]!, group: GroupAsInput, constraints: [ConstraintAsInput!]!, objective: ObjectiveAsInput!): [Result]
+  multiDisciplineProblem(driver: DriverAsInput!, independantVariables: [IndependantVariableComponentAsInput!]!, designVariables: [DesignVariableAsInput!]!, group: GroupAsInput, constraints: [ConstraintAsInput!]!, objective: ObjectiveAsInput!): [Result]
   CKGErrors: [String]
 }
 

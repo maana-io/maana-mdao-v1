@@ -69,11 +69,13 @@ input DesignVariableAsInput {
 type Driver {
   id: ID!
   optimizer: String!
+  optimize: Boolean
 }
 
 input DriverAsInput {
   id: ID!
   optimizer: String!
+  optimize: Boolean
 }
 
 type ExecComp {

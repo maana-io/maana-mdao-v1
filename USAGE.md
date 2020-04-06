@@ -71,38 +71,39 @@ query{
   multiDisciplineProblem(
     driver: {
       id: "sciPy",
-      optimizer: "COBYLA"
+      optimizer: "SLSQP"
+      optimize: false
     }
   	independantVariables:[
       {
         id: "x"
-        value: 1.0
+        value: 2.0
       },
       {
         id: "z1"
-        value: 5.0
+        value: -1.0
       },
       {
         id: "z2"
-        value: 2.0
+        value: -1.0
       }
 
     ]
     designVariables:[
       {
         id: "x"
-        lowerBound: -50
-        upperBound: 50
+        lowerBound: 0
+        upperBound: 10
       }
       {
         id: "z1"
-        lowerBound: -50
-        upperBound: 50
+        lowerBound: 0
+        upperBound: 10
       },
       {
         id: "z2"
-        lowerBound: -50
-        upperBound: 50
+        lowerBound: 0
+        upperBound: 10
       }
     ]
     group: {
@@ -117,7 +118,7 @@ query{
               equation: "y1 = z1**2 + z2 + x - 0.2*y2"
               
             }
-            promotesInputs: ["x", "z2", "y2"]
+            promotesInputs: ["x", "z2", "z1" "y2"]
             promotesOutputs: ["y1"]
           }
         {
@@ -137,19 +138,19 @@ query{
     
     constraints:[
       {
-        id: "const.con1"
+        id: "con1"
         name: "con1"
-        lowerBound: 0
-        upperBound: 10
+        lowerBound: null
+        upperBound: 0
         equation: "con1 = 3.16 - y1"
         promotes: ["con1", "y1"]
       }
        {
-        id: "const.con2"
+        id: "con2"
         name: "con2"
-        lowerBound: 0
-        upperBound: 10
-        equation: "con2 = y2 - 24.0"
+        lowerBound: null
+        upperBound: 0
+        equation: "con2 = y2 - 24"
         promotes: ["con2", "y2"]
       }
     ]

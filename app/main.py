@@ -209,6 +209,8 @@ def resolve_multi_discipline_problem(*_,  driver, independantVariables, designVa
         cycle.add_subsystem(d['component']['name'],  om.ExecComp(d['component']["equation"]),  promotes_inputs=d['promotesInputs'],
                             promotes_outputs=d['promotesOutputs'])
     
+
+    # NEED TO ADD A WAY TO CHOOSE THE SOLVER FOR THE GROUP
     # Nonlinear Block Gauss Seidel is a gradient free solver
     cycle.nonlinear_solver = om.NonlinearBlockGS()
 
@@ -255,39 +257,31 @@ def resolve_multi_discipline_problem(*_,  driver, independantVariables, designVa
     #prob['x'] = 2.
 
     ## ADD AN OPTION TO RUN THE MODEL ONLY
-    #prob.run_model()
+    #
 
-
-
-    prob.set_solver_print(level=0)
-
-    prob.model.approx_totals()
-
-    prob.run_driver()
-    
-    
-
-    # EXAMPLE MODEL OUTPUT
-    #prob['y1'][0], prob['y2'][0], prob['obj'][0], prob['con1'][0], prob['con2'][0])
-    
     results = []
-
-    #get objective value
-    results.append({'id': objective['id'], 'value': prob[objective['id']][0]})
-
-    # gets the output values
-    #for ec in group['explicitDisciplines']:
-    #    for o in ec['promotesOutputs']:
-    #        results.append({'id': o, 'value': prob[o][0]})
-
-
-    for d in designVariables:
-        results.append({'id': d['id'], 'value': prob[d['id']][0]})
-    #for c in constraints:
-    #    results.append({'id': c['name'], 'value': prob[c['name']][0]})
-
-    return results
-
+    if(driver["optimize"] == True):
+        prob.set_solver_print(level=0)
+        prob.model.approx_totals()
+        prob.run_driver()
+        results.append({'id': objective['id'], 'value': prob[objective['id']][0]})
+        for d in designVariables:
+            results.append({'id': d['id'], 'value': prob[d['id']][0]})
+        return results
+    elif(driver["optimize"] == False):
+        # running model only
+        # set any intial values on the model
+        for i in independantVariables:
+            prob[i['id']] = i['value']
+        prob.run_model()
+        results.append({'id': objective['id'], 'value': prob[objective['id']][0]})
+        for ec in group['explicitDisciplines']:
+            for o in ec['promotesOutputs']:
+                results.append({'id': o, 'value': prob[o][0]})
+        for c in constraints:
+            results.append({'id': c['name'], 'value': prob[c['name']][0]})
+        return results
+   
 
 
 #problem(driver: DriverAsInput!, independantVariables: [IndependantVariableComponentAsInput!]!, designVariables: [DesignVariableAsInput!]!, explicitComponent: ExplicitComponentAsInput!, constraints: [ConstraintAsInput!]!, objective: ObjectiveAsInput!): [Result]
